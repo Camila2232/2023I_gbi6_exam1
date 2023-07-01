@@ -1,0 +1,73 @@
+#Ejercisio 1
+
+import popsimulate
+
+import scipy
+import numpy.random as random
+
+import numpy.random as random
+
+def build_population(N, p):
+    population = []
+    for i in range(N):
+        allele1 = "A"
+        if random.rand() > p:
+            allele1 = "a"
+        allele2 = "A"
+        if random.rand() > p:
+            allele2 = "a"
+        population.append((allele1, allele2))
+    return population
+
+population = build_population(20, 0.5)
+print(population)
+
+def compute_frequencies(population):
+    AA = population.count(("A", "A"))
+    Aa = population.count(("A", "a"))
+    aA = population.count(("a", "A"))
+    aa = population.count(("a", "a"))
+    return({"AA": AA, "aa": aa, "Aa": Aa, "aA": aA})
+
+population = [("A", "A"), ("A", "a"), ("a", "A"), ("a", "a"), ("A", "A"), ("A", "a"), ("A", "A"), ("a", "a"), ("a", "a") ]
+frequencies = compute_frequencies(population)
+print(frequencies)
+
+import numpy as np
+
+def reproduce_population(population):
+    new_generation = []
+    N = len(population)
+    for i in range(N):
+        dad = np.random.randint(N)
+        mom = np.random.randint(N)
+        chr_mom = np.random.randint(2)
+        offspring = (population[mom][chr_mom], population[dad][1 - chr_mom])
+        new_generation.append(offspring)
+    return new_generation
+
+population = [('A', 'A'), ('A', 'a'), ('a', 'A'), ('a', 'a')]
+new_generation = reproduce_population(population)
+print(new_generation)
+
+def simulate_drift(N, p):
+    my_pop = build_population(N, p)
+    fixation = False
+    num_generations = 0
+    while fixation == False:
+        genotype_counts = compute_frequencies(my_pop)
+        if (genotype_counts["AA"] == N or genotype_counts["aa"] == N):
+            print("An allele reached fixation at generation", num_generations)
+            print("The genotype counts are")
+            print(genotype_counts)
+            fixation == True
+            break
+        my_pop = reproduce_population(my_pop)
+        num_generations += 1
+    return num_generations, genotype_counts
+
+N = 100
+p = 0.5
+num_generations, genotype_counts = simulate_drift(N, p)
+print("Total generations:", num_generations)
+print("Genotype counts:", genotype_counts)
